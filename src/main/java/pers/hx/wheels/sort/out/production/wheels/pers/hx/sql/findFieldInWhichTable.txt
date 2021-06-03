@@ -1,0 +1,7 @@
+//查询字段在数据库哪张表
+//SQL Server
+
+select name from [数据库].[dbo].sysobjects
+where id in
+(select id from [数据库].[dbo].syscolumns
+Where name='字段名')

@@ -1,0 +1,104 @@
+/// <summary>
+        /// post 文件
+        /// </summary>
+        /// <param name="fileNamePathDic">文件名 - 文件绝对路径</param>
+        /// <param name="url">上传地址</param>
+        /// <param name="formData">其余的表单数据</param>
+        /// <param name="cookies">需要设置的cookie</param>
+        /// <returns></returns>
+        public static string PostFile(Dictionary<string, string> fileNamePathDic, string url, Dictionary<string, string> formData = null, Dictionary<string, string> cookies = null)
+        {
+            if (string.IsNullOrEmpty(url)) return "";
+
+            if (fileNamePathDic.Keys.Count == 0) return "";
+
+            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+            request.Method = "POST";
+            request.Accept = "application/json";
+            request.Headers.Add("X-Atlassian-Token", "nocheck");
+            if (cookies != null)
+            {
+                foreach (var item in cookies)
+                {
+                    request.Headers.Add("cookie", string.Format("{0}={1}", item.Key, item.Value));
+                }
+            }
+            request.ContentLength = 0;
+
+            var boundary = string.Format("----------{0:N}", Guid.NewGuid());
+            var content = new MemoryStream();
+            var writer = new StreamWriter(content);
+            foreach (var item in fileNamePathDic)
+            {
+
+                var fs = new FileStream(item.Value, FileMode.Open, FileAccess.Read);
+                var data = new byte[fs.Length];
+                fs.Read(data, 0, data.Length);
+                fs.Close();
+
+                writer.WriteLine("--{0}", boundary);
+                writer.WriteLine("Content-Disposition: form-data; name=\"file\"; filename=\"{0}\"", item.Key);
+                writer.WriteLine("Content-Type: application/octet-stream");
+                writer.WriteLine();
+                writer.Flush();
+
+                content.Write(data, 0, data.Length);
+
+                writer.WriteLine();
+
+            }
+
+            if (formData != null)
+            {
+                foreach (var item in formData)
+                {
+                    var data = Encoding.UTF8.GetBytes(item.Value);
+
+                    writer.WriteLine("--{0}", boundary);
+                    writer.WriteLine("Content-Disposition: form-data; name=\"{0}\"", item.Key);
+                    writer.WriteLine();
+                    writer.Flush();
+
+                    content.Write(data, 0, data.Length);
+
+                    writer.WriteLine();
+                }
+            }
+
+            writer.WriteLine("--" + boundary + "--");
+            writer.Flush();
+            content.Seek(0, SeekOrigin.Begin);
+            request.ContentType = string.Format("multipart/form-data; boundary={0}", boundary);
+            request.ContentLength += content.Length;
+
+            using (Stream requestStream = request.GetRequestStream())
+            {
+                content.WriteTo(requestStream);
+                requestStream.Close();
+            }
+
+            string respresultStr = "";
+            using (WebResponse resp = request.GetResponse())
+            {
+                Stream stream = resp.GetResponseStream();
+                using (StreamReader read = new StreamReader(stream))
+                {
+                    respresultStr = read.ReadToEnd();
+                }
+            }
+            return respresultStr;
+        }
+
+        /// <summary>
+        /// post 文件
+        /// </summary>
+        /// <param name="fileNamePathDic">文件名 - 文件绝对路径</param>
+        /// <param name="url">上传地址</param>
+        /// <param name="formData">其余的表单数据</param>
+        /// <param name="cookies">需要设置的cookie</param>
+        /// <returns></returns>
+        public static T PostFile<T>(Dictionary<string, string> fileNamePathDic, string url, Dictionary<string, string> formData = null, Dictionary<string, string> cookies = null)
+        {
+            string str = PostFile(fileNamePathDic, url, formData, cookies);
+            return JsonConvert.DeserializeObject<T>(str);
+        }

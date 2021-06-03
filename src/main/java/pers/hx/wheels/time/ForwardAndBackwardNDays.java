@@ -1,4 +1,4 @@
-package main.pers.hx.wheels.time;
+package pers.hx.wheels.time;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -9,7 +9,7 @@ public class ForwardAndBackwardNDays {
         System.out.println("Hello World!");
         ForwardAndBackwardNDays fabnd = new ForwardAndBackwardNDays();
         fabnd.backWard(days);   //前第10天
-        fabnd.forwWard(days);   //后第10天
+        fabnd.foreWard(days);   //后第10天
     }
 
     public void backWard(int n) {
@@ -20,7 +20,7 @@ public class ForwardAndBackwardNDays {
         System.out.println(three_days_ago);
     }
 
-    public void forwWard(int n) {
+    public void foreWard(int n) {
         Calendar calendar1 = Calendar.getInstance();
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
         calendar1.add(Calendar.DATE, n);
