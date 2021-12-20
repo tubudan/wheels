@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IllegalAccessException, InstantiationException {
         int s = 11;
         assert s>=123;
         System.out.println("Hello World!");
@@ -11,6 +11,8 @@ public class Main {
         System.out.println(b);
         Class cls = a.getClass();
         System.out.println(cls);
+        String c = (String) cls.newInstance();
+
     }
 
     //枚举类

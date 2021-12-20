@@ -8,8 +8,8 @@ public class ForwardAndBackwardNDays {
         int days = 10;
         System.out.println("Hello World!");
         ForwardAndBackwardNDays fabnd = new ForwardAndBackwardNDays();
-        fabnd.backWard(days);   //前第10天
-        fabnd.foreWard(days);   //后第10天
+        fabnd.dayChange(-days);   //前第10天
+        fabnd.dayChange(days);   //后第10天
     }
 
     public void backWard(int n) {
@@ -21,6 +21,14 @@ public class ForwardAndBackwardNDays {
     }
 
     public void foreWard(int n) {
+        Calendar calendar1 = Calendar.getInstance();
+        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
+        calendar1.add(Calendar.DATE, n);
+        String three_days_after = sdf1.format(calendar1.getTime());
+        System.out.println(three_days_after);
+    }
+
+    public void dayChange(int n) {
         Calendar calendar1 = Calendar.getInstance();
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
         calendar1.add(Calendar.DATE, n);
